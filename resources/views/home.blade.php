@@ -8,5 +8,9 @@
 <body>
     <h1>support center</h1>
     <h3>support ticket system</h3>
+
+    <form action="{{ route('ticket.store') }}" method="POST">
+        @csrf
+    </form>
 </body>
 </html>
