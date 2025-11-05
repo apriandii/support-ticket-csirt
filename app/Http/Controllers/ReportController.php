@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Http;
 
 class ReportController extends Controller
 {
+    function view(){
+        return view('index');
+    }
     function create()
     {
         return view('report_form');
@@ -18,7 +21,7 @@ class ReportController extends Controller
     function store(Request $request)
     {
         // Validate and store the report data
-            $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
@@ -53,7 +56,11 @@ class ReportController extends Controller
         $report->save();
 
         // Redirect back to the form with a success message
-        return redirect()->route('report.create')->with('success', 'Report submitted successfully!');        
+        // dd('Report submitted successfully!', $report);
+        // return redirect()->route('report.ticket')->with('success', 'Report submitted successfully!');
+        $reporttt = Report::where('ticket_number', $report->ticket_number)->first();
+        // dd($reporttt->ticket_number);
+        return redirect()->route('report.ticket',compact( 'reporttt'))->with('success', "ini tiket mu deck ".$reporttt->ticket_number);
     }
 
     public function adminDashboard(Request $request)
@@ -97,22 +104,23 @@ class ReportController extends Controller
 
     public function checkTiket(Request $request)
     {
+        // $report = null;
         // Logic to check the ticket status
         $request->validate([
             'ticket_number' => 'required|string|max:255',
         ]);
 
-        
-
         $report = Report::where('ticket_number', $request->ticket_number)->first();
+
+        if (!$this->validateRecaptchaV2($request->input('g-recaptcha-response'))) {
+            return back()->with('error', 'Captcha Verification Fail!. Please try again.');
+        }
 
         if (!$report) {
             return redirect()->back()->with('error', 'Ticket not found.');
         }
-if (!$this->validateRecaptchaV2($request->input('g-recaptcha-response'))) {
-            return back()->with('error', 'Captcha Verification Fail!. Please try again.');
-        }
-        return view('ticket.result', compact('report'));
+
+        return view('ticket.check', compact('report'));
     }
 
     private function validateRecaptchaV2($token)

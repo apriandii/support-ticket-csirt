@@ -1,7 +1,9 @@
-<!DOCTYPE html>
-<html>
+@extends('layoutview/layout')
+@section('title', 'Report Form - CSIRT Kaltara')
+@section('content')
 <head>
     <title>Ubah Status Tiket</title>
+    <link href="{{ asset('css/style.css') }}" rel="stylesheet">
 </head>
 <body>
     <h2>Ubah Status Tiket: {{ $report->ticket_number }}</h2>
@@ -20,4 +22,4 @@
 
     <p><a href="{{ route('admin.dashboard') }}">← Kembali ke Dashboard</a></p>
 </body>
-</html>
+@endsection
